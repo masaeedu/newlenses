@@ -47,3 +47,7 @@ _Left = quimble
 
 _Right :: Prism (Either x a) (Either x b) a b
 _Right = flark
+
+-- Up to Example 2.0.2, page 4 right now. Need to figure out how to make optics of distinct categories compose
+-- This involves dealing with various kinds of monoidal functors between the monoidal categories
+test = _

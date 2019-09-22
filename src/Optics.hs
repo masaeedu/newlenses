@@ -1,25 +1,49 @@
+{-# LANGUAGE TypeApplications #-}
 module Optics where
+
+import Data.Void
 
 import Types
 import Classes
+import Instances
 
-_2 :: GCategory p => Optic p m '(x `m` a, x `m` b) '(a, b)
-_2 = Optic gid gid
+-- General things
+flark :: GCategory p => Optic p m '(x `m` a, x `m` b) '(a, b)
+flark = Optic gid gid
 
-_1 :: SymmetricTensoid p m => Optic p m '(a `m` x, b `m` x) '(a, b)
-_1 = Optic swap swap
+quimble :: SymmetricTensoid p m => Optic p m '(a `m` x, b `m` x) '(a, b)
+quimble = Optic swap swap
 
 view :: Semicartesian p m i => Optic p m '(s, t) '(a, b) -> s `p` a
 view (Optic f _) = right <<< f
 
--- over :: Cartesian p m i => Optic p m '(s, t) '(a, b) -> a
+put :: Semicartesian p m i => Optic p m '(s, t) '(a, b) -> (s `m` b) `p` t
+put (Optic f g) = g <<< gbimap (left <<< f) gid
 
--- type Lens  s t a b = forall p r. (forall m. SymmetricTensor p (,)    ()   => Optic p m '(s, t) '(a, b) -> r) -> r
--- type Prism s t a b = forall p r. (forall m. SymmetricTensor p Either Void => Optic p m '(s, t) '(a, b) -> r) -> r
+-- Specific things
+type Lens s t a b = Optic (->) (,) '(s, t) '(a, b)
+type Prism s t a b = Optic (Op (->)) Either '(s, t) '(a, b)
 
--- _1 :: Lens (a, x) (b, x) a b
--- _1 = Optic swap swap
+extract :: Lens s t a b -> s -> a
+extract = view
 
--- _2 :: Lens (x, a) (x, b) a b
--- _3 :: Lens (x, y, a) (x, y, b) a b
--- _3 = Optic (\v@(_, _, a) -> (v, a)) (\((x, y, _), b) -> (x, y, b))
+update :: Lens s t a b -> (s, b) -> t
+update = put
+
+build :: Prism s t a b -> a -> s
+build = runOp <<< view
+
+match :: Prism s t a b -> t -> Either s b
+match = runOp <<< put
+
+_1 :: Lens (a, x) (b, x) a b
+_1 = quimble
+
+_2 :: Lens (x, a) (x, b) a b
+_2 = flark
+
+_Left :: Prism (Either a x) (Either b x) a b
+_Left = quimble
+
+_Right :: Prism (Either x a) (Either x b) a b
+_Right = flark

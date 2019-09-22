@@ -35,8 +35,6 @@ instance SymmetricTensoid p t => SymmetricTensoid (Op p) t
   where
   swap = Op swap
 
-instance SymmetricTensor p t i => SymmetricTensor (Op p) t i
-
 -- (,)
 instance GBifunctor (->) (,)
   where
@@ -65,13 +63,9 @@ instance SymmetricTensoid (->) (,)
   where
   swap (x, y) = (y, x)
 
-instance SymmetricTensor (->) (,) ()
-
 instance Terminal (->) ()
   where
   discard = const ()
-
-instance Semicartesian (->) (,) ()
 
 instance Cartesian (->) (,) ()
   where
@@ -111,13 +105,9 @@ instance SymmetricTensoid (->) Either
   swap (Left x) = Right x
   swap (Right x) = Left x
 
-instance SymmetricTensor (->) Either Void
-
 instance Terminal (Op (->)) Void
   where
   discard = Op absurd
-
-instance Semicartesian (Op (->)) Either Void
 
 instance Cartesian (Op (->)) Either Void
   where

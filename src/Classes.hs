@@ -29,17 +29,17 @@ class Tensoid p t => SymmetricTensoid p t
   where
   swap :: p (t a b) (t b a)
 
-class (SymmetricTensoid p t, Tensor p t i) => SymmetricTensor p t i
+type SymmetricTensor p t i = (SymmetricTensoid p t, Tensor p t i)
 
 -- Terminal object
-class GCategory p => Terminal p i | i -> p
+class GCategory p => Terminal p i
   where
   discard :: p x i
 
 type Initial p i = Terminal (Op p) i
 
 -- Semicartesian monoidal
-class (Terminal p i, Tensor p t i) => Semicartesian p t i
+type Semicartesian p t i = (Terminal p i, Tensor p t i)
 
 type Semicocartesian p t i = Semicartesian (Op p) t i
 
